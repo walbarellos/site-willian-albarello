@@ -11,6 +11,7 @@ import type {
 import { API_PUBLIC_ROUTES } from '@william-albarello/contracts';
 
 const DEFAULT_PUBLIC_API_BASE_URL = 'http://localhost:3002';
+const DEFAULT_PUBLIC_API_TIMEOUT_MS = 10000;
 
 export class PublicApiError extends Error {
   readonly status: number;
@@ -245,6 +246,17 @@ export function buildPublicApiUrl(
   return url.toString();
 }
 
+function resolvePublicApiTimeoutMs(): number {
+  const raw = process.env.NEXT_PUBLIC_API_TIMEOUT_MS?.trim();
+  const parsed = raw ? Number(raw) : NaN;
+
+  if (Number.isFinite(parsed) && parsed >= 1000) {
+    return Math.trunc(parsed);
+  }
+
+  return DEFAULT_PUBLIC_API_TIMEOUT_MS;
+}
+
 async function parseJson(response: Response): Promise<unknown> {
   const contentType = response.headers.get('content-type') ?? '';
 
@@ -291,24 +303,43 @@ async function requestPublicApi<T>(
   init?: RequestInit,
 ): Promise<T> {
   let response: Response;
+  const timeoutMs = resolvePublicApiTimeoutMs();
+  const controller = new AbortController();
+  const timeoutId =
+    init?.signal === undefined
+      ? setTimeout(() => controller.abort(), timeoutMs)
+      : undefined;
 
   try {
     response = await fetch(buildPublicApiUrl(path), {
       method: 'GET',
       cache: 'no-store',
       ...init,
+      signal: init?.signal ?? controller.signal,
       headers: (() => {
         const headers = new Headers(init?.headers);
         headers.set('accept', 'application/json');
         return headers;
       })(),
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new PublicApiError({
+        status: 0,
+        code: 'TIMEOUT',
+        message: `Public API request timed out after ${timeoutMs}ms.`,
+      });
+    }
+
     throw new PublicApiError({
       status: 0,
       code: 'NETWORK_ERROR',
       message: 'Unable to reach the public API.',
     });
+  } finally {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
   }
 
   const payload = await parseJson(response);

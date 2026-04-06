@@ -8,6 +8,7 @@ import { listPublications } from '../src/lib/api/public';
 import { WEB_PUBLIC_ROUTES } from '../src/lib/routes';
 
 export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 const DEFAULT_SITE_URL = 'http://localhost:3000';
 
