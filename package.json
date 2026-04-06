@@ -1,0 +1,41 @@
+{
+  "name": "personal-site",
+  "version": "0.1.0",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @william-albarello/api --filter @william-albarello/web --filter @william-albarello/admin dev",
+    "dev:api": "pnpm --filter @william-albarello/api dev",
+    "dev:web": "pnpm --filter @william-albarello/web dev",
+    "dev:admin": "pnpm --filter @william-albarello/admin dev",
+    "build": "pnpm -r build",
+    "build:shared": "pnpm --filter @william-albarello/contracts build && pnpm --filter @william-albarello/ui build",
+    "build:api": "pnpm --filter @william-albarello/api build",
+    "build:web": "pnpm --filter @william-albarello/web build",
+    "build:admin": "pnpm --filter @william-albarello/admin build",
+    "typecheck": "pnpm -r typecheck",
+    "typecheck:shared": "pnpm --filter @william-albarello/contracts typecheck && pnpm --filter @william-albarello/ui typecheck",
+    "typecheck:apps": "pnpm --filter @william-albarello/api typecheck && pnpm --filter @william-albarello/web typecheck && pnpm --filter @william-albarello/admin typecheck",
+    "typecheck:api": "pnpm --filter @william-albarello/api typecheck",
+    "typecheck:web": "pnpm --filter @william-albarello/web typecheck",
+    "typecheck:admin": "pnpm --filter @william-albarello/admin typecheck",
+    "test": "pnpm -r --if-present test",
+    "test:watch": "pnpm -r --parallel --if-present test:watch",
+    "test:contracts": "pnpm --filter @william-albarello/contracts test",
+    "test:api": "pnpm --filter @william-albarello/api test",
+    "test:ci": "pnpm test:contracts && pnpm test:api",
+    "clean": "pnpm -r clean",
+    "verify:hardening": "pnpm clean && pnpm build:shared && pnpm typecheck:shared && pnpm build:api && pnpm typecheck:api && pnpm build:web && pnpm typecheck:web && pnpm build:admin && pnpm typecheck:admin",
+    "start:api": "pnpm --filter @william-albarello/api start",
+    "start:web": "pnpm --filter @william-albarello/web start",
+    "start:admin": "pnpm --filter @william-albarello/admin start"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.2",
+    "typescript": "^5.9.3"
+  }
+}

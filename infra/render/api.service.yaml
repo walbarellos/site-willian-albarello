@@ -1,0 +1,48 @@
+services:
+  - type: web
+    name: personal-site-api
+    runtime: node
+    rootDir: apps/api
+    plan: starter
+    region: oregon
+    branch: main
+    autoDeploy: true
+
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @william-albarello/api build
+    startCommand: pnpm --filter @william-albarello/api start
+
+    healthCheckPath: /ready
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: PORT
+        value: "10000"
+
+      - key: SESSION_SECRET
+        sync: false
+
+      - key: DATABASE_URL
+        sync: false
+
+      - key: PUBLIC_SITE_URL
+        sync: false
+
+      - key: ADMIN_SITE_URL
+        sync: false
+
+      - key: CORS_ORIGINS
+        sync: false
+
+      - key: ADMIN_BOOTSTRAP_EMAIL
+        sync: false
+
+      - key: ADMIN_BOOTSTRAP_PASSWORD
+        sync: false
+
+      - key: ADMIN_BOOTSTRAP_DISPLAY_NAME
+        value: Administrador
+
+      - key: ADMIN_BOOTSTRAP_ROLE
+        value: admin
