@@ -1,4 +1,5 @@
 name: API Breaking Change
+# Gate de breaking change contratual para push/PR.
 
 on:
   pull_request:
