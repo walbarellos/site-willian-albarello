@@ -22,6 +22,8 @@ export type PublicationsListShellProps = {
     error?: FeatureErrorState | null;
     onRetryHref?: string;
     buildEditHref: (id: string) => string;
+    createPublicationHref?: string;
+    deleteDraftAction?: (publicationId: string) => Promise<void>;
 };
 
 export type PublicationsFiltersProps = {
@@ -33,6 +35,7 @@ export type PublicationsFiltersProps = {
 export type PublicationsTableProps = {
     items: PublicationListItem[];
     buildEditHref: (id: string) => string;
+    deleteDraftAction?: (publicationId: string) => Promise<void>;
 };
 
 export type PublicationsListStateProps = {

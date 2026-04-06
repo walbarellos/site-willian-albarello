@@ -6,6 +6,9 @@ import { z } from 'zod';
 import {
   requireAdminSession,
 } from '../lib/admin-auth.js';
+import {
+  getInMemoryPublicationsStore,
+} from '../lib/in-memory-publications-store.js';
 import type {
   AdminRole,
   AuthenticatedAdminUser,
@@ -168,6 +171,13 @@ class InvalidEditorialTransitionError extends Error {
   }
 }
 
+class InvalidDraftDeletionError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'InvalidDraftDeletionError';
+  }
+}
+
 export interface AdminPublicationsAdapter {
   listPublications(
     query: NormalizedListQuery,
@@ -189,6 +199,10 @@ export interface AdminPublicationsAdapter {
   transitionPublicationStatus(
     id: string,
     nextStatus: EditorialStatus,
+    actor: AuthenticatedAdminUser,
+  ): Promise<AdminPublication | null>;
+  deleteDraft(
+    id: string,
     actor: AuthenticatedAdminUser,
   ): Promise<AdminPublication | null>;
 }
@@ -266,87 +280,10 @@ async function requireEditorialSession(
 }
 
 function createInMemoryAdapter(): AdminPublicationsAdapter {
-  const artigosCategory: CategoryRef = {
-    id: 'cat-001',
-    name: 'Artigos',
-    slug: 'artigos',
-  };
-
-  const governancaCategory: CategoryRef = {
-    id: 'cat-002',
-    name: 'Governança',
-    slug: 'governanca',
-  };
-
-  const institucionalTag: TagRef = {
-    id: 'tag-001',
-    name: 'Institucional',
-    slug: 'institucional',
-  };
-
-  const estrategiaTag: TagRef = {
-    id: 'tag-002',
-    name: 'Estratégia',
-    slug: 'estrategia',
-  };
-
-  const editorialTag: TagRef = {
-    id: 'tag-003',
-    name: 'Editorial',
-    slug: 'editorial',
-  };
-
-  const categories: CategoryRef[] = [artigosCategory, governancaCategory];
-  const tags: TagRef[] = [institucionalTag, estrategiaTag, editorialTag];
-  const records = new Map<string, AdminPublication>();
-
-  records.set('pub-001', {
-    id: 'pub-001',
-    title: 'A inteligência relacional como eixo de presença institucional',
-    slug: 'inteligencia-relacional-eixo-presenca-institucional',
-    summary:
-    'Uma introdução pública ao posicionamento institucional e à forma de produção de presença digital disciplinada.',
-    content:
-    'Conteúdo demonstrativo inicial para scaffold P0. Substituir por persistência real e conteúdo editorial real nas próximas ondas.',
-    status: 'published',
-    categoryId: artigosCategory.id,
-    tagIds: [institucionalTag.id, estrategiaTag.id],
-    category: artigosCategory,
-    tags: [institucionalTag, estrategiaTag],
-    seo: {
-      metaTitle:
-      'A inteligência relacional como eixo de presença institucional',
-      metaDescription:
-      'Introdução pública ao posicionamento institucional do projeto.',
-    },
-    publishedAt: '2026-04-01T12:00:00.000Z',
-    updatedAt: '2026-04-01T12:00:00.000Z',
-    readingTimeMinutes: 4,
-  });
-
-  records.set('pub-002', {
-    id: 'pub-002',
-    title: 'Fluxo editorial, clareza pública e consistência de publicação',
-    slug: 'fluxo-editorial-clareza-publica-consistencia-publicacao',
-    summary:
-    'Como a governança editorial protege a qualidade pública sem sacrificar agilidade operacional.',
-    content:
-    'Conteúdo demonstrativo inicial para scaffold P0. Este registro existe para permitir paginação e edição no bootstrap.',
-    status: 'review',
-    categoryId: governancaCategory.id,
-    tagIds: [editorialTag.id],
-    category: governancaCategory,
-    tags: [editorialTag],
-    seo: {
-      metaTitle:
-      'Fluxo editorial, clareza pública e consistência de publicação',
-      metaDescription:
-      'Como a governança editorial sustenta qualidade e consistência.',
-    },
-    publishedAt: null,
-    updatedAt: '2026-04-03T10:30:00.000Z',
-    readingTimeMinutes: 5,
-  });
+  const store = getInMemoryPublicationsStore();
+  const categories = store.categories;
+  const tags = store.tags;
+  const records = store.records as Map<string, AdminPublication>;
 
   function hydrateCategory(categoryId?: string | null): CategoryRef | null {
     if (!categoryId) {
@@ -533,6 +470,23 @@ function createInMemoryAdapter(): AdminPublicationsAdapter {
 
       records.set(id, nextRecord);
       return nextRecord;
+    },
+
+    async deleteDraft(id, _actor) {
+      const current = records.get(id);
+
+      if (!current) {
+        return null;
+      }
+
+      if (current.status !== 'draft') {
+        throw new InvalidDraftDeletionError(
+          'Only draft publications can be deleted.',
+        );
+      }
+
+      records.delete(id);
+      return current;
     },
   };
 }
@@ -738,6 +692,70 @@ AdminPublicationsRoutesOptions
       );
 
       return sendSuccess(request, reply, publication);
+    },
+  );
+
+  app.delete(
+    DETAIL_PATH,
+    async (
+      request: FastifyRequest<{ Params: unknown }>,
+      reply,
+    ): Promise<FastifyReply> => {
+      const actor = await requireEditorialSession(request, reply);
+
+      if (isFastifyReply(actor)) {
+        return actor;
+      }
+
+      const parsedParams = idParamsSchema.safeParse(request.params);
+
+      if (!parsedParams.success) {
+        return sendParamsValidationError(
+          request,
+          reply,
+          mapZodIssuesToErrorDetails(parsedParams.error.issues),
+        );
+      }
+
+      try {
+        const deleted = await adapter.deleteDraft(parsedParams.data.id, actor);
+
+        if (!deleted) {
+          return sendError(
+            request,
+            reply,
+            404,
+            'NOT_FOUND',
+            PUBLICATION_NOT_FOUND_MESSAGE,
+          );
+        }
+
+        request.log.info(
+          {
+            traceId: request.id,
+            userId: actor.id,
+            email: actor.email,
+            role: actor.role,
+            publicationId: deleted.id,
+            status: deleted.status,
+          },
+          'admin draft deleted',
+        );
+
+        return sendSuccess(request, reply, deleted);
+      } catch (error) {
+        if (error instanceof InvalidDraftDeletionError) {
+          return sendError(
+            request,
+            reply,
+            409,
+            'CONFLICT',
+            error.message,
+          );
+        }
+
+        throw error;
+      }
     },
   );
 

@@ -1,7 +1,6 @@
 import type { CSSProperties } from 'react';
 
 import type { PublicPublicationDetail } from '@william-albarello/contracts';
-
 import { PublicationBreadcrumbs } from './publication-breadcrumbs';
 
 export type PublicationArticleHeaderProps = {
@@ -31,6 +30,10 @@ export function PublicationArticleHeader({
 }: PublicationArticleHeaderProps) {
   const publishedAt = formatDate(publication.publishedAt);
   const updatedAt = formatDate(publication.updatedAt);
+  const normalizedSummary = publication.summary.trim();
+  const shouldRenderSummary =
+    normalizedSummary.length >= 20 &&
+    normalizedSummary.toLowerCase() !== 'ok';
 
   return (
     <header
@@ -45,75 +48,106 @@ export function PublicationArticleHeader({
         boxShadow: '0 12px 32px rgba(16, 24, 40, 0.05)',
       }}
     >
-      <PublicationBreadcrumbs title={publication.title} />
-
-      <div
-        style={{
-          display: 'flex',
-          gap: '0.7rem',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-        }}
-      >
-        {publishedAt ? <span style={metaBadgeStyle}>{publishedAt}</span> : null}
-
-        {publication.readingTimeMinutes ? (
-          <span
-            style={{
-              ...metaBadgeStyle,
-              background: '#eef4ff',
-              color: '#175cd3',
-              border: '1px solid #c7d7fe',
-            }}
-          >
-            {publication.readingTimeMinutes} min de leitura
-          </span>
-        ) : null}
-
-        {updatedAt && updatedAt !== publishedAt ? (
-          <span
-            style={{
-              ...metaBadgeStyle,
-              background: '#f8fafc',
-              color: '#475467',
-              border: '1px solid #d0d5dd',
-            }}
-          >
-            Atualizado em {updatedAt}
-          </span>
-        ) : null}
-      </div>
-
       <div
         style={{
           display: 'grid',
-          gap: '0.85rem',
+          gap: '1rem',
+          width: '100%',
+          maxWidth: 760,
+          margin: 0,
         }}
       >
-        <h1
-          style={{
-            margin: 0,
-            color: '#0f172a',
-            fontSize: 'clamp(2rem, 4vw, 3.4rem)',
-            lineHeight: 1.04,
-            letterSpacing: '-0.04em',
-            maxWidth: 860,
-          }}
-        >
-          {publication.title}
-        </h1>
+        <PublicationBreadcrumbs title={publication.title} />
 
-        <p
+        <div
           style={{
-            margin: 0,
-            color: '#475467',
-            fontSize: '1.04rem',
-            lineHeight: 1.8,
-            maxWidth: 840,
+            display: 'flex',
+            gap: '0.7rem',
+            flexWrap: 'wrap',
+            alignItems: 'center',
           }}
         >
-          {publication.summary}
-        </p>
+          {publishedAt ? <span style={metaBadgeStyle}>{publishedAt}</span> : null}
+
+          {publication.readingTimeMinutes ? (
+            <span
+              style={{
+                ...metaBadgeStyle,
+                background: '#eef4ff',
+                color: '#175cd3',
+                border: '1px solid #c7d7fe',
+              }}
+            >
+              {publication.readingTimeMinutes} min de leitura
+            </span>
+          ) : null}
+
+          {updatedAt && updatedAt !== publishedAt ? (
+            <span
+              style={{
+                ...metaBadgeStyle,
+                background: '#f8fafc',
+                color: '#475467',
+                border: '1px solid #d0d5dd',
+              }}
+            >
+              Atualizado em {updatedAt}
+            </span>
+          ) : null}
+
+          {publication.category ? (
+            <span
+              style={{
+                ...metaBadgeStyle,
+                background: '#ecfdf3',
+                color: '#027a48',
+                border: '1px solid #abefc6',
+              }}
+            >
+              {publication.category.name}
+            </span>
+          ) : null}
+        </div>
+
+        <div
+          style={{
+            display: 'grid',
+            gap: '0.85rem',
+            width: '100%',
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              color: '#0f172a',
+              fontSize: 'clamp(2rem, 4vw, 3.4rem)',
+              lineHeight: 1.04,
+              letterSpacing: '-0.04em',
+              maxWidth: 760,
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
+              textAlign: 'center',
+            }}
+          >
+            {publication.title}
+          </h1>
+
+          {shouldRenderSummary ? (
+            <p
+              style={{
+                margin: 0,
+                color: '#475467',
+                fontSize: '1.04rem',
+                lineHeight: 1.8,
+                maxWidth: 760,
+                whiteSpace: 'pre-wrap',
+                overflowWrap: 'anywhere',
+              }}
+            >
+              {normalizedSummary}
+            </p>
+          ) : null}
+        </div>
       </div>
     </header>
   );

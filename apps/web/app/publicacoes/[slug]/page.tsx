@@ -9,8 +9,10 @@ import {
   isPublicApiError,
 } from '../../../src/lib/api/public';
 import { buildPublicationDetailHref } from '../../../src/lib/routes';
-import { PublicationDetailErrorState } from '../../../src/features/publicacoes/detail/publication-detail-error-state';
-import { PublicationDetailShell } from '../../../src/features/publicacoes/detail/publication-detail-shell';
+import {
+  PublicationDetailErrorState,
+  PublicationDetailShell,
+} from '../../../src/features/publicacoes/detail';
 
 export const revalidate = 300;
 

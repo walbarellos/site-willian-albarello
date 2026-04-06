@@ -1,9 +1,6 @@
 import type { PublicPublicationDetail } from '@william-albarello/contracts';
 
-import { PublicationArticleBody } from './publication-article-body';
-import { PublicationArticleHeader } from './publication-article-header';
-import { PublicationDetailFooter } from './publication-detail-footer';
-import { PublicationDetailMeta } from './publication-detail-meta';
+import { PublicationReadingShell } from './publication-reading-shell';
 
 export type PublicationDetailShellProps = {
   publication: PublicPublicationDetail;
@@ -16,28 +13,18 @@ export function PublicationDetailShell({
     <main
       style={{
         display: 'grid',
-        gap: '1.5rem',
+        gap: '1.1rem',
       }}
     >
       <div
         style={{
           width: '100%',
-          maxWidth: 1120,
+          maxWidth: 920,
           margin: '0 auto',
-          paddingInline: '1.25rem',
+          paddingInline: '1rem',
         }}
       >
-        <div
-          style={{
-            display: 'grid',
-            gap: '1.25rem',
-          }}
-        >
-          <PublicationArticleHeader publication={publication} />
-          <PublicationDetailMeta publication={publication} />
-          <PublicationArticleBody publication={publication} />
-          <PublicationDetailFooter publication={publication} />
-        </div>
+        <PublicationReadingShell publication={publication} />
       </div>
     </main>
   );

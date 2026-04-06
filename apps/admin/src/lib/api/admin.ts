@@ -63,6 +63,24 @@ export class AdminApiError extends Error {
   }
 }
 
+export type UploadAdminMediaInput = {
+  fileName: string;
+  mimeType: string;
+  base64Data: string;
+};
+
+export type UploadAdminMediaResponse = {
+  data: {
+    url: string;
+    fileName: string;
+    mimeType: string;
+    size: number;
+  };
+  meta: {
+    traceId: string;
+  };
+};
+
 function isRecord(value: unknown): value is RecordLike {
   return typeof value === 'object' && value !== null;
 }
@@ -81,6 +99,20 @@ function isBoolean(value: unknown): value is boolean {
 
 function isMetaShape(value: unknown): value is { traceId: string } {
   return isRecord(value) && isString(value.traceId);
+}
+
+function isUploadAdminMediaResponse(
+  value: unknown,
+): value is UploadAdminMediaResponse {
+  return (
+    isRecord(value) &&
+    isRecord(value.data) &&
+    isString(value.data.url) &&
+    isString(value.data.fileName) &&
+    isString(value.data.mimeType) &&
+    isNumber(value.data.size) &&
+    isMetaShape(value.meta)
+  );
 }
 
 function isPaginationMetaShape(
@@ -386,8 +418,10 @@ async function buildRequestHeaders(
 
   const hasBody =
   options.body !== undefined && options.body !== null && options.body !== '';
+  const isFormDataBody =
+    typeof FormData !== 'undefined' && options.body instanceof FormData;
 
-  if (hasBody && !headers.has('content-type')) {
+  if (hasBody && !isFormDataBody && !headers.has('content-type')) {
     headers.set('content-type', 'application/json');
   }
 
@@ -595,6 +629,35 @@ export async function transitionAdminPublicationStatus(
                            method: 'PATCH',
                            body: JSON.stringify(normalizedInput),
                          },
+  );
+}
+
+export async function deleteAdminPublicationDraft(
+  id: string,
+  options: AdminApiRequestOptions = {},
+): Promise<SuccessAdminPublicationDetailResponse> {
+  return requestAdminApi(
+    API_ADMIN_ROUTES.publicationById(id),
+    isSuccessAdminPublicationDetailResponse,
+    {
+      ...options,
+      method: 'DELETE',
+    },
+  );
+}
+
+export async function uploadAdminMedia(
+  input: UploadAdminMediaInput,
+  options: AdminApiRequestOptions = {},
+): Promise<UploadAdminMediaResponse> {
+  return requestAdminApi(
+    '/v1/admin/media/upload',
+    isUploadAdminMediaResponse,
+    {
+      ...options,
+      method: 'POST',
+      body: JSON.stringify(input),
+    },
   );
 }
 

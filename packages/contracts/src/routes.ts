@@ -107,6 +107,7 @@ export const ADMIN_APP_ROUTES = {
     }),
     dashboard: '/painel',
     publications: '/painel/publicacoes',
+    publicationCreate: '/painel/publicacoes/nova',
         publicationsWithQuery: (query?: AdminPublicationsRouteQuery) =>
             withQuery('/painel/publicacoes', query),
             publicationEdit: (id: string) =>
@@ -182,6 +183,7 @@ export type AdminStaticPath =
 | typeof ADMIN_APP_ROUTES.login
 | typeof ADMIN_APP_ROUTES.dashboard
 | typeof ADMIN_APP_ROUTES.publications
+| typeof ADMIN_APP_ROUTES.publicationCreate
 | typeof ADMIN_APP_ROUTES.protectedDefaultRedirect;
 
 export type ApiUtilityPath =

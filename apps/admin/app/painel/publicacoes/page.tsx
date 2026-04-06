@@ -10,10 +10,12 @@ import type {
 } from '@william-albarello/contracts';
 
 import {
+  deleteAdminPublicationDraft,
   isAdminApiError,
   listAdminPublications,
 } from '../../../src/lib/api/admin';
 import {
+  buildAdminPublicationCreateHref,
   buildAdminPublicationEditHref,
   buildAdminPublicationsHref,
   resolveProtectedAdminLoginHref,
@@ -164,11 +166,39 @@ export default async function AdminPublicationsPage({ searchParams }: PageProps)
 
   const state = await readPublicationsState(query, currentHref);
 
+  async function deleteDraftAction(publicationId: string) {
+    'use server';
+
+    await requireAdminSessionServer({
+      allowedRoles: ['admin', 'editor'],
+      returnTo: currentHref,
+    });
+
+    if (!publicationId || !publicationId.trim()) {
+      redirect(currentHref);
+    }
+
+    try {
+      await deleteAdminPublicationDraft(publicationId.trim(), {
+        includeServerCookies: true,
+      });
+      redirect(currentHref);
+    } catch (error: unknown) {
+      if (isAdminApiError(error) && (error.status === 401 || error.status === 403)) {
+        redirect(resolveProtectedAdminLoginHref(currentHref));
+      }
+
+      redirect(currentHref);
+    }
+  }
+
   return (
     <PublicationsListShell
       items={state.items}
       query={query}
       buildEditHref={buildAdminPublicationEditHref}
+      createPublicationHref={buildAdminPublicationCreateHref()}
+      deleteDraftAction={deleteDraftAction}
       onRetryHref={currentHref}
       error={state.error}
       pagination={{

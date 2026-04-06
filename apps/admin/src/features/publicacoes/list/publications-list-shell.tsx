@@ -4,6 +4,7 @@ import {
   AdminSectionCard,
   AdminSupportBlock,
 } from '@william-albarello/ui';
+import Link from 'next/link';
 
 import { PublicationsListState } from './publications-list-state';
 import { PublicationsTable } from './publications-table';
@@ -18,6 +19,8 @@ export function PublicationsListShell({
   error,
   onRetryHref,
   buildEditHref,
+  createPublicationHref,
+  deleteDraftAction,
   pagination,
 }: PublicationsListShellProps & {
   pagination?: {
@@ -58,6 +61,29 @@ export function PublicationsListShell({
           title="Listagem editorial"
           description="Camada operacional da feature para leitura rápida dos status, atualização e navegação para edição."
           eyebrow="Feature de publicações"
+          actions={
+            createPublicationHref ? (
+              <Link
+                href={createPublicationHref}
+                style={{
+                  display: 'inline-flex',
+                  minHeight: 40,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 12,
+                  border: '1px solid #175cd3',
+                  background: '#175cd3',
+                  color: '#ffffff',
+                  textDecoration: 'none',
+                  fontWeight: 700,
+                  fontSize: '0.88rem',
+                  paddingInline: '0.9rem',
+                }}
+              >
+                Nova publicação
+              </Link>
+            ) : undefined
+          }
           meta={[
             {
               label: 'Total exibido',
@@ -121,7 +147,11 @@ export function PublicationsListShell({
           {loading || error || items.length === 0 ? (
             state
           ) : (
-            <PublicationsTable items={items} buildEditHref={buildEditHref} />
+            <PublicationsTable
+              items={items}
+              buildEditHref={buildEditHref}
+              deleteDraftAction={deleteDraftAction}
+            />
           )}
         </AdminSectionCard>
 

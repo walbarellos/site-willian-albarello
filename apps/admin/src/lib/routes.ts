@@ -75,11 +75,24 @@ export type AdminPublicationsRouteQuery = {
 
 export const ADMIN_ROUTES = ADMIN_APP_ROUTES;
 
+const DEFAULT_PUBLIC_SITE_URL = 'http://localhost:3000';
+
+function resolvePublicSiteBaseUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim() || DEFAULT_PUBLIC_SITE_URL;
+
+  try {
+    return new URL(raw).toString().replace(/\/+$/, '');
+  } catch {
+    return DEFAULT_PUBLIC_SITE_URL;
+  }
+}
+
 export type AdminStaticRoute =
   | typeof ADMIN_ROUTES.entry
   | typeof ADMIN_ROUTES.login
   | typeof ADMIN_ROUTES.dashboard
   | typeof ADMIN_ROUTES.publications
+  | typeof ADMIN_ROUTES.publicationCreate
   | typeof ADMIN_ROUTES.protectedDefaultRedirect;
 
 export type AdminPublicationEditRoute = ReturnType<
@@ -129,6 +142,22 @@ export function buildAdminPublicationsHref(
 
 export function buildAdminPublicationEditHref(id: string): string {
   return ADMIN_ROUTES.publicationEdit(id);
+}
+
+export function buildAdminPublicationCreateHref(): string {
+  return ADMIN_ROUTES.publicationCreate;
+}
+
+export function buildPublicSiteHomeHref(): string {
+  return `${resolvePublicSiteBaseUrl()}/`;
+}
+
+export function buildPublicSitePublicationsHref(): string {
+  return `${resolvePublicSiteBaseUrl()}/publicacoes`;
+}
+
+export function buildPublicSitePublicationDetailHref(slug: string): string {
+  return `${resolvePublicSiteBaseUrl()}/publicacoes/${encodeURIComponent(slug.trim())}`;
 }
 
 export function buildProtectedRedirectHref(): string {

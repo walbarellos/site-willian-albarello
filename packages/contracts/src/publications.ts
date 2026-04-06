@@ -54,6 +54,7 @@ export interface PublicPublicationSummary {
     summary: string;
     publishedAt: string;
     readingTimeMinutes?: number;
+    previewImageUrl?: string;
     category?: CategoryRef | null;
     tags: TagRef[];
 }
@@ -253,6 +254,10 @@ export function isPublicPublicationSummary(
     candidate.readingTimeMinutes === undefined ||
     typeof candidate.readingTimeMinutes === 'number';
 
+    const hasValidPreviewImage =
+    candidate.previewImageUrl === undefined ||
+    typeof candidate.previewImageUrl === 'string';
+
     return (
         typeof candidate.id === 'string' &&
         typeof candidate.title === 'string' &&
@@ -261,7 +266,8 @@ export function isPublicPublicationSummary(
         typeof candidate.publishedAt === 'string' &&
         hasValidCategory &&
         hasValidTags &&
-        hasValidReadingTime
+        hasValidReadingTime &&
+        hasValidPreviewImage
     );
 }
 

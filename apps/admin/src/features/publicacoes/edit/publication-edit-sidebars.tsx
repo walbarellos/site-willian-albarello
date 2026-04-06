@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { CSSProperties } from 'react';
 
 import type { EditorialStatus } from '@william-albarello/contracts';
@@ -5,6 +6,7 @@ import { AdminSectionCard, StatusBadge } from '@william-albarello/ui';
 
 import { formatAdminDate } from '../shared/format';
 import { getPublicationStatusLabel } from '../shared/status';
+import { buildPublicSitePublicationDetailHref } from '../../../lib/routes';
 
 export type PublicationEditSidebarsProps = {
   status: EditorialStatus;
@@ -97,6 +99,24 @@ export function PublicationEditSidebars({
           editorial. O proximo passo natural e acoplar preview e workflow mais
           rico sem quebrar esta base operacional.
         </p>
+
+        <div
+          style={{
+            marginTop: '0.9rem',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.55rem',
+          }}
+        >
+          <Link
+            href={buildPublicSitePublicationDetailHref(slug)}
+            target="_blank"
+            rel="noreferrer"
+            style={previewLinkStyle}
+          >
+            Ver publicação no site
+          </Link>
+        </div>
       </AdminSectionCard>
     </aside>
   );
@@ -114,4 +134,19 @@ const definitionValueStyle: CSSProperties = {
   margin: 0,
   color: '#101828',
   lineHeight: 1.55,
+};
+
+const previewLinkStyle: CSSProperties = {
+  display: 'inline-flex',
+  minHeight: 36,
+  alignItems: 'center',
+  justifyContent: 'center',
+  borderRadius: 10,
+  border: '1px solid #d0d5dd',
+  background: '#ffffff',
+  color: '#344054',
+  textDecoration: 'none',
+  fontWeight: 700,
+  fontSize: '0.82rem',
+  paddingInline: '0.7rem',
 };

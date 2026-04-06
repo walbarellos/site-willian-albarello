@@ -3,6 +3,14 @@
 import Link from 'next/link';
 import type { Metadata, Viewport } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
+import {
+  AdminSidebarNav,
+  type AdminSidebarNavItem,
+} from '../src/features/navigation/admin-sidebar-nav';
+import {
+  buildPublicSiteHomeHref,
+  buildPublicSitePublicationsHref,
+} from '../src/lib/routes';
 
 const ADMIN_NAME = 'William Albarello — Painel';
 const ADMIN_DESCRIPTION =
@@ -43,22 +51,16 @@ type RootLayoutProps = Readonly<{
   children: ReactNode;
 }>;
 
-type AdminNavItem = {
-  href: string;
-  label: string;
-  description: string;
-};
-
-const adminNavItems: AdminNavItem[] = [
+const adminNavItems: AdminSidebarNavItem[] = [
   {
-    href: '/',
+    href: '/painel',
     label: 'Entrada',
-    description: 'Ponto inicial do painel administrativo.',
+    description: 'Resumo do ciclo e atalhos principais.',
   },
   {
-    href: '/painel/login',
-    label: 'Login',
-    description: 'Autenticação administrativa.',
+    href: '/painel/publicacoes/nova',
+    label: 'Nova publicação',
+    description: 'Cria rascunho e abre editor completo.',
   },
   {
     href: '/painel/publicacoes',
@@ -168,47 +170,7 @@ function AdminSidebar() {
       <AdminBrand />
 
       <nav aria-label="Seções internas">
-        <ul
-          style={{
-            display: 'grid',
-            gap: '0.6rem',
-            listStyle: 'none',
-            padding: 0,
-            margin: 0,
-          }}
-        >
-          {adminNavItems.map((item) => (
-            <li key={item.href}>
-              <Link href={item.href} style={sidebarLinkStyle}>
-                <span
-                  style={{
-                    display: 'grid',
-                    gap: '0.18rem',
-                  }}
-                >
-                  <span
-                    style={{
-                      color: '#f8fafc',
-                      fontWeight: 700,
-                      lineHeight: 1.2,
-                    }}
-                  >
-                    {item.label}
-                  </span>
-                  <span
-                    style={{
-                      color: '#94a3b8',
-                      fontSize: '0.82rem',
-                      lineHeight: 1.45,
-                    }}
-                  >
-                    {item.description}
-                  </span>
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <AdminSidebarNav items={adminNavItems} />
       </nav>
 
       <div
@@ -241,9 +203,33 @@ function AdminSidebar() {
             lineHeight: 1.6,
           }}
         >
-          Navegação estrutural apenas. Sessão, permissão e proteção de rotas
-          permanecem responsabilidade das camadas de autenticação.
+          Painel de uso individual com foco em publicar com clareza, revisar
+          status e manter continuidade editorial.
         </p>
+
+        <div
+          style={{
+            display: 'grid',
+            gap: '0.45rem',
+          }}
+        >
+          <Link
+            href={buildPublicSiteHomeHref()}
+            target="_blank"
+            rel="noreferrer"
+            style={quickLinkStyle}
+          >
+            Ver página inicial
+          </Link>
+          <Link
+            href={buildPublicSitePublicationsHref()}
+            target="_blank"
+            rel="noreferrer"
+            style={quickLinkStyle}
+          >
+            Ver publicações públicas
+          </Link>
+        </div>
       </div>
     </aside>
   );
@@ -301,7 +287,7 @@ function AdminTopbar() {
         </div>
 
         <Link
-          href="/painel/publicacoes"
+          href="/painel/publicacoes/nova"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
@@ -316,7 +302,7 @@ function AdminTopbar() {
             whiteSpace: 'nowrap',
           }}
         >
-          Ir para publicações
+          Nova publicação
         </Link>
       </div>
     </header>
@@ -406,12 +392,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
   );
 }
 
-const sidebarLinkStyle: CSSProperties = {
-  display: 'grid',
-  gap: '0.25rem',
-  padding: '0.95rem 1rem',
-  borderRadius: 16,
+const quickLinkStyle: CSSProperties = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  minHeight: 34,
+  borderRadius: 10,
+  border: '1px solid rgba(148, 163, 184, 0.28)',
+  paddingInline: '0.65rem',
   textDecoration: 'none',
-  background: 'rgba(255,255,255,0.03)',
-  border: '1px solid rgba(148, 163, 184, 0.10)',
+  color: '#e2e8f0',
+  fontSize: '0.8rem',
+  fontWeight: 600,
+  background: 'rgba(15, 23, 42, 0.35)',
 };

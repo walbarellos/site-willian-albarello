@@ -41,6 +41,7 @@ type RawPublicPublicationListItem = Omit<
   'readingTimeMinutes'
 > & {
   readingTimeMinutes?: number | null;
+  previewImageUrl?: string;
 };
 
 type RawPublicPublicationDetail = RawPublicPublicationListItem & {
@@ -131,6 +132,7 @@ function isRawPublicPublicationListItemShape(
     (value.readingTimeMinutes === undefined ||
       value.readingTimeMinutes === null ||
       isNumber(value.readingTimeMinutes)) &&
+    (value.previewImageUrl === undefined || isString(value.previewImageUrl)) &&
     (value.seo === undefined || isSeoShape(value.seo))
   );
 }

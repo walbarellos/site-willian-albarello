@@ -11,6 +11,9 @@ import {
   sendQueryValidationError,
   sendSuccess,
 } from '../lib/http-contract.js';
+import {
+  getInMemoryPublicationsStore,
+} from '../lib/in-memory-publications-store.js';
 
 const LIST_PATH = '/v1/public/publications';
 const DETAIL_PATH = '/v1/public/publications/:slug';
@@ -76,6 +79,7 @@ type PublicPublicationSummary = {
   summary: string;
   publishedAt: string;
   readingTimeMinutes?: number;
+  previewImageUrl?: string;
   category?: CategoryRef | null;
   tags: TagRef[];
 };
@@ -158,7 +162,23 @@ function normalizeRecordDate(record: PublicPublicationRecord): string {
   return record.publishedAt ?? record.updatedAt ?? new Date(0).toISOString();
 }
 
+function extractFirstImageUrl(content: string): string | undefined {
+  const markdownMatch = content.match(/!\[[^\]]*]\((https?:\/\/[^)\s]+)\)/i);
+  if (markdownMatch?.[1]) {
+    return markdownMatch[1].trim();
+  }
+
+  const htmlMatch = content.match(/<img\b[^>]*\bsrc=["'](https?:\/\/[^"']+)["']/i);
+  if (htmlMatch?.[1]) {
+    return htmlMatch[1].trim();
+  }
+
+  return undefined;
+}
+
 function toSummary(record: PublicPublicationRecord): PublicPublicationSummary {
+  const previewImageUrl = record.seo?.ogImageUrl || extractFirstImageUrl(record.content);
+
   return {
     id: record.id,
     title: record.title,
@@ -166,6 +186,7 @@ function toSummary(record: PublicPublicationRecord): PublicPublicationSummary {
     summary: record.summary,
     publishedAt: normalizeRecordDate(record),
     readingTimeMinutes: record.readingTimeMinutes,
+    previewImageUrl,
     category: record.category ?? null,
     tags: record.tags ?? [],
   };
@@ -181,89 +202,13 @@ function toDetail(record: PublicPublicationRecord): PublicPublicationDetail {
 }
 
 function createInMemoryAdapter(): PublicPublicationsAdapter {
-  const records: PublicPublicationRecord[] = [
-    {
-      id: 'pub-001',
-      title: 'A inteligência relacional como eixo de presença institucional',
-      slug: 'inteligencia-relacional-eixo-presenca-institucional',
-      summary:
-      'Uma introdução pública ao posicionamento institucional e à forma de produção de presença digital disciplinada.',
-      content:
-      'Conteúdo demonstrativo inicial para scaffold P0. Substituir por persistência real e conteúdo editorial real nas próximas ondas.',
-      status: 'published',
-      publishedAt: '2026-04-01T12:00:00.000Z',
-      updatedAt: '2026-04-01T12:00:00.000Z',
-      readingTimeMinutes: 4,
-      category: {
-        id: 'cat-001',
-        name: 'Artigos',
-        slug: 'artigos',
-      },
-      tags: [
-        {
-          id: 'tag-001',
-          name: 'Institucional',
-          slug: 'institucional',
-        },
-        {
-          id: 'tag-002',
-          name: 'Estratégia',
-          slug: 'estrategia',
-        },
-      ],
-      seo: {
-        metaTitle:
-        'A inteligência relacional como eixo de presença institucional',
-        metaDescription:
-        'Introdução pública ao posicionamento institucional do projeto.',
-      },
-    },
-    {
-      id: 'pub-002',
-      title: 'Fluxo editorial, clareza pública e consistência de publicação',
-      slug: 'fluxo-editorial-clareza-publica-consistencia-publicacao',
-      summary:
-      'Como a governança editorial protege a qualidade pública sem sacrificar agilidade operacional.',
-      content:
-      'Conteúdo demonstrativo inicial para scaffold P0. Este registro existe para permitir paginação e detalhe no bootstrap.',
-      status: 'published',
-      publishedAt: '2026-04-02T09:30:00.000Z',
-      updatedAt: '2026-04-02T09:30:00.000Z',
-      readingTimeMinutes: 6,
-      category: {
-        id: 'cat-002',
-        name: 'Governança',
-        slug: 'governanca',
-      },
-      tags: [
-        {
-          id: 'tag-003',
-          name: 'Editorial',
-          slug: 'editorial',
-        },
-      ],
-      seo: {
-        metaTitle:
-        'Fluxo editorial, clareza pública e consistência de publicação',
-        metaDescription:
-        'Como a governança editorial sustenta qualidade e consistência.',
-      },
-    },
-    {
-      id: 'pub-003',
-      title: 'Rascunho interno não público',
-      slug: 'rascunho-interno-nao-publico',
-      summary: 'Este conteúdo não deve ser exposto publicamente.',
-      content: 'Conteúdo de rascunho.',
-      status: 'draft',
-      readingTimeMinutes: 2,
-      category: null,
-      tags: [],
-    },
-  ];
+  const store = getInMemoryPublicationsStore();
 
   return {
     async listPublishedPublications(query) {
+      const records = Array.from(
+        store.records.values(),
+      ) as PublicPublicationRecord[];
       const normalizedQuery = query.q?.toLowerCase();
       const normalizedCategory = query.category?.toLowerCase();
       const normalizedTag = query.tag?.toLowerCase();
@@ -329,6 +274,9 @@ function createInMemoryAdapter(): PublicPublicationsAdapter {
 
     async getPublishedPublicationBySlug(slug) {
       const normalizedSlug = slug.trim().toLowerCase();
+      const records = Array.from(
+        store.records.values(),
+      ) as PublicPublicationRecord[];
 
       return (
         records.find(

@@ -64,6 +64,19 @@ type FeedbackCode =
 | 'transition-failed'
 | 'session-failed';
 
+function isNextRedirectError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  if (!('digest' in error)) {
+    return false;
+  }
+
+  const digest = (error as { digest?: unknown }).digest;
+  return typeof digest === 'string' && digest.startsWith('NEXT_REDIRECT');
+}
+
 function getSingleSearchParam(
   value: string | string[] | undefined,
 ): string | undefined {
@@ -227,6 +240,10 @@ export default async function AdminPublicationEditPage({
 
       redirect(buildEditHref(safePublicationId, 'saved'));
     } catch (error: unknown) {
+      if (isNextRedirectError(error)) {
+        throw error;
+      }
+
       if (isAdminApiError(error)) {
         if (error.status === 401 || error.status === 403) {
           redirect(buildEditHref(safePublicationId, 'session-failed'));
@@ -280,6 +297,10 @@ export default async function AdminPublicationEditPage({
 
       redirect(buildEditHref(safePublicationId, 'saved'));
     } catch (error: unknown) {
+      if (isNextRedirectError(error)) {
+        throw error;
+      }
+
       if (isAdminApiError(error)) {
         if (error.status === 401 || error.status === 403) {
           redirect(buildEditHref(safePublicationId, 'session-failed'));
@@ -331,6 +352,10 @@ export default async function AdminPublicationEditPage({
 
       redirect(buildEditHref(safePublicationId, 'status-updated'));
     } catch (error: unknown) {
+      if (isNextRedirectError(error)) {
+        throw error;
+      }
+
       if (isAdminApiError(error)) {
         if (error.status === 401 || error.status === 403) {
           redirect(buildEditHref(safePublicationId, 'session-failed'));
@@ -365,8 +390,8 @@ export default async function AdminPublicationEditPage({
     style={{
       display: 'grid',
       gap: '1rem',
-      gridTemplateColumns: 'minmax(0, 1.75fr) minmax(300px, 0.9fr)',
-          alignItems: 'start',
+      gridTemplateColumns: 'minmax(0, 1fr)',
+      alignItems: 'start',
     }}
     >
     <div id="admin-publication-edit-content">

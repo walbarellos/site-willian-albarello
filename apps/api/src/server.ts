@@ -17,6 +17,7 @@ import { env } from './lib/env.js';
 import { authRoutes } from './routes/auth.js';
 import { dashboardRoutes } from './routes/dashboard.js';
 import { healthRoutes } from './routes/health.js';
+import { mediaRoutes } from './routes/media-admin.js';
 import { adminPublicationsRoutes } from './routes/publications-admin.js';
 import { publicPublicationsRoutes } from './routes/publications-public.js';
 
@@ -329,6 +330,7 @@ async function registerRoutes(app: FastifyInstance): Promise<void> {
   await app.register(dashboardRoutes);
   await app.register(publicPublicationsRoutes);
   await app.register(adminPublicationsRoutes);
+  await app.register(mediaRoutes);
 }
 
 function registerGlobalHandlers(app: FastifyInstance): void {

@@ -32,7 +32,20 @@ export function PublicationsListState({
           retryHref ? (
             <Link
               href={retryHref}
-              className="inline-flex rounded-lg border border-red-300 bg-white px-3 py-1.5 text-sm font-medium text-red-800 no-underline transition-colors hover:bg-red-50"
+              style={{
+                display: 'inline-flex',
+                minHeight: 34,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 10,
+                border: '1px solid #fda29b',
+                background: '#ffffff',
+                color: '#b42318',
+                textDecoration: 'none',
+                fontSize: '0.85rem',
+                fontWeight: 700,
+                paddingInline: '0.7rem',
+              }}
             >
               {error.retryLabel ?? 'Tentar novamente'}
             </Link>

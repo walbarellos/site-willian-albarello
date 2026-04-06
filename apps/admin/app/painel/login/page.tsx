@@ -74,6 +74,8 @@ export default function AdminLoginPage() {
   const [nextPath, setNextPath] = useState(() =>
     resolveAdminPostLoginHref(undefined),
   );
+  const [forceMode, setForceMode] = useState(false);
+  const [searchReady, setSearchReady] = useState(false);
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -85,12 +87,24 @@ export default function AdminLoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setNextPath(resolveAdminPostLoginHref(params.get('next')));
+    const force = params.get('force');
+    setForceMode(force === '1' || force === 'true');
+    setSearchReady(true);
   }, []);
 
   useEffect(() => {
+    if (!searchReady) {
+      return;
+    }
+
     let active = true;
 
     async function probeSession() {
+      if (forceMode) {
+        setNotice('Modo forçado ativo: entre com as credenciais para trocar de sessão.');
+        return;
+      }
+
       try {
         const session = await getCurrentAdminSession({
           autoCsrf: false,
@@ -133,7 +147,7 @@ export default function AdminLoginPage() {
     return () => {
       active = false;
     };
-  }, [nextPath, router]);
+  }, [forceMode, nextPath, router, searchReady]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

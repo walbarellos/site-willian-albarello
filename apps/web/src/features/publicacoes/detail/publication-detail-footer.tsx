@@ -4,7 +4,6 @@ import type { CSSProperties } from 'react';
 import type { PublicPublicationDetail } from '@william-albarello/contracts';
 
 import {
-  buildPublicationDetailHref,
   WEB_PUBLIC_ROUTES,
 } from '../../../lib/routes';
 
@@ -13,19 +12,21 @@ export type PublicationDetailFooterProps = {
 };
 
 export function PublicationDetailFooter({
-  publication,
+  publication: _publication,
 }: PublicationDetailFooterProps) {
   return (
     <section
       aria-labelledby="publication-footer-title"
       style={{
         display: 'grid',
-        gap: '1rem',
-        padding: '1.25rem',
-        borderRadius: 20,
+        gap: '0.9rem',
+        padding: '1.1rem 1rem',
+        borderRadius: 14,
         background:
-          'linear-gradient(135deg, rgba(15,76,255,0.06), rgba(23,92,211,0.02))',
-        border: '1px solid rgba(23,92,211,0.12)',
+          'linear-gradient(135deg, rgba(15,76,255,0.05), rgba(23,92,211,0.015))',
+        border: '1px solid rgba(23,92,211,0.14)',
+        justifyItems: 'center',
+        textAlign: 'center',
       }}
     >
       <h2
@@ -43,35 +44,36 @@ export function PublicationDetailFooter({
         style={{
           margin: 0,
           color: '#475467',
-          lineHeight: 1.75,
-          maxWidth: 760,
+          lineHeight: 1.7,
+          maxWidth: 700,
+          fontSize: '0.96rem',
         }}
       >
-        Esta publicacao integra a camada publica do projeto e foi organizada
-        para leitura institucional clara, descoberta organica disciplinada e
-        evolucao editorial continua.
+        Leitura concluída. Continue navegando pela camada pública e explore os
+        conteúdos com o mesmo padrão editorial.
       </p>
 
       <div
         style={{
-          display: 'flex',
+          width: '100%',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, minmax(0, 1fr))',
           gap: '0.85rem',
-          flexWrap: 'wrap',
+          alignItems: 'center',
         }}
       >
-        <Link href={WEB_PUBLIC_ROUTES.publications} style={primaryActionStyle}>
+        <Link
+          href={WEB_PUBLIC_ROUTES.publications}
+          style={{ ...primaryActionStyle, justifySelf: 'start' }}
+        >
           Ver todas as publicacoes
         </Link>
 
-        <Link href={WEB_PUBLIC_ROUTES.home} style={secondaryActionStyle}>
-          Voltar ao inicio
-        </Link>
-
         <Link
-          href={buildPublicationDetailHref(publication.slug)}
-          style={secondaryActionStyle}
+          href={WEB_PUBLIC_ROUTES.home}
+          style={{ ...secondaryActionStyle, justifySelf: 'end' }}
         >
-          Atualizar esta pagina
+          Voltar ao inicio
         </Link>
       </div>
     </section>

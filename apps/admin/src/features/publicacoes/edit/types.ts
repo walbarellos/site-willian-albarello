@@ -10,6 +10,8 @@ import type {
 
 export type PublicationEditorFormProps = {
     values: PublicationEditFormValues;
+    formId?: string;
+    showSubmitButton?: boolean;
     submitting?: boolean;
     error?: FeatureErrorState | null;
     onSubmit?: (values: PublicationEditFormValues) => void;
@@ -17,6 +19,8 @@ export type PublicationEditorFormProps = {
 
 export type PublicationSeoPanelProps = {
     values: PublicationSeoFormValues;
+    formId?: string;
+    showSubmitButton?: boolean;
     submitting?: boolean;
     error?: FeatureErrorState | null;
     onSubmit?: (values: PublicationSeoFormValues) => void;

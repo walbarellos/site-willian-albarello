@@ -208,12 +208,15 @@ function PublicFooter() {
           paddingBottom: '2rem',
           display: 'grid',
           gap: '1rem',
+          justifyItems: 'center',
+          textAlign: 'center',
         }}
       >
         <div
           style={{
             display: 'grid',
             gap: '0.5rem',
+            justifyItems: 'center',
           }}
         >
           <strong
@@ -241,11 +244,9 @@ function PublicFooter() {
 
         <div
           style={{
-            display: 'flex',
-            flexWrap: 'wrap',
+            display: 'grid',
             gap: '1rem',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            justifyItems: 'center',
             color: '#667085',
             fontSize: '0.9rem',
           }}
@@ -258,6 +259,7 @@ function PublicFooter() {
               alignItems: 'center',
               gap: '0.85rem',
               flexWrap: 'wrap',
+              justifyContent: 'center',
             }}
           >
             <a href="/" style={footerLinkStyle}>
