@@ -58,10 +58,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -q "./openapi/components/schemas.common.yaml#/schemas/" APIs/API-06-openapi-public.yaml
-          grep -q "./openapi/components/schemas.common.yaml#/schemas/" APIs/API-07-openapi-admin.yaml
-          grep -q "./openapi/components/responses.common.yaml#/responses/" APIs/API-06-openapi-public.yaml
-          grep -q "./openapi/components/responses.common.yaml#/responses/" APIs/API-07-openapi-admin.yaml
+          grep -q "#/components/schemas/" APIs/API-06-openapi-public.yaml
+          grep -q "#/components/schemas/" APIs/API-07-openapi-admin.yaml
+          grep -q "#/components/responses/" APIs/API-06-openapi-public.yaml
+          grep -q "#/components/responses/" APIs/API-07-openapi-admin.yaml
 
       - name: Validate README Contract Section Mentions
         shell: bash
