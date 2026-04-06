@@ -116,7 +116,6 @@ pnpm verify:hardening
 
 ## Sequência oficial de validação
 
-Documento operacional: `Scaffold/SCF-04-bootstrap-de-qualidade-local-e-ci.md`
 
 Resumo da ordem:
 
@@ -160,25 +159,7 @@ Componentes comuns:
 
 ## Entradas úteis por domínio
 
-- API: `apps/api/README.md`
-- Web: `apps/web/README.md`
-- Admin: `apps/admin/README.md`
-- Arquitetura técnica: `Waterfall/DOC-10-arquitetura-tecnica.md`
-- Segurança P0: `Waterfall/DOC-14-seguranca-p0.md`
-- SEO técnico: `Waterfall/DOC-15-seo-tecnico.md`
-- Governança editorial: `Waterfall/DOC-16-estrategia-editorial-e-governanca.md`
-- Observabilidade: `Waterfall/DOC-21-observabilidade-logs-e-incidentes.md`
-
 ## Governança Caracol com OpenClaw
-
-Esta base adota o Método Caracol com execução sequencial de ciclo (`Atualização de código`) e checkpoint por item concluído.
-
-Padrão operacional mínimo:
-
-1. Executar um item por vez, em ordem.
-2. Validar o item (typecheck/teste aplicável).
-3. Registrar checkpoint com evidência.
-4. Avançar para o próximo item.
 
 OpenClaw no projeto:
 
@@ -187,6 +168,3 @@ OpenClaw no projeto:
 - Checkpoint de memória local: `~/.openclaw/workspace/memory/personal-site/`
 
 Regra de auditoria:
-
-- checkpoints e notas de ciclo são artefatos operacionais de rastreabilidade;
-- não devem ser removidos como “lixo” quando estiverem vinculados ao ciclo ativo.
