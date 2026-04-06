@@ -1,0 +1,78 @@
+name: API Contract
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'APIs/**'
+      - 'packages/contracts/**'
+      - '.github/workflows/api-contract.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+  pull_request:
+    paths:
+      - 'APIs/**'
+      - 'packages/contracts/**'
+      - '.github/workflows/api-contract.yml'
+      - 'pnpm-lock.yaml'
+      - 'package.json'
+      - 'pnpm-workspace.yaml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-contract-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  contract-gate:
+    name: Contract Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Validate OpenAPI Files Presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s APIs/API-06-openapi-public.yaml
+          test -s APIs/API-07-openapi-admin.yaml
+          test -s APIs/openapi/components/schemas.common.yaml
+          test -s APIs/openapi/components/responses.common.yaml
+
+      - name: Validate OpenAPI Root Keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^openapi:' APIs/API-06-openapi-public.yaml
+          grep -q '^openapi:' APIs/API-07-openapi-admin.yaml
+          grep -q '^schemas:' APIs/openapi/components/schemas.common.yaml
+          grep -q '^responses:' APIs/openapi/components/responses.common.yaml
+
+      - name: Build Contracts Package
+        run: pnpm --filter @william-albarello/contracts build
+
+      - name: Typecheck Contracts Package
+        run: pnpm --filter @william-albarello/contracts typecheck

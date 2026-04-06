@@ -1,0 +1,77 @@
+name: Deploy Readiness
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'infra/**'
+      - 'QA/**'
+      - '.github/workflows/deploy-readiness.yml'
+      - '.github/workflows/scaffold-bootstrap.yml'
+      - '.github/workflows/api-contract.yml'
+      - '.github/workflows/api-docs.yml'
+      - '.github/workflows/api-breaking-change.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'tsconfig.base.json'
+  pull_request:
+    paths:
+      - 'apps/**'
+      - 'packages/**'
+      - 'infra/**'
+      - 'QA/**'
+      - '.github/workflows/deploy-readiness.yml'
+      - '.github/workflows/scaffold-bootstrap.yml'
+      - '.github/workflows/api-contract.yml'
+      - '.github/workflows/api-docs.yml'
+      - '.github/workflows/api-breaking-change.yml'
+      - 'package.json'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'tsconfig.base.json'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-readiness-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    name: Readiness Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PNPM
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install Dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test CI
+        run: pnpm test:ci
+
+      - name: Verify Hardening
+        run: pnpm verify:hardening
+
+      - name: Release Check Script (CI mode)
+        run: SKIP_SMOKE=1 bash infra/scripts/release-check.sh

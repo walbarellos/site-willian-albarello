@@ -1,0 +1,73 @@
+name: API Docs
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'APIs/**'
+      - '.github/workflows/api-docs.yml'
+      - 'README.md'
+  pull_request:
+    paths:
+      - 'APIs/**'
+      - '.github/workflows/api-docs.yml'
+      - 'README.md'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-docs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-gate:
+    name: Docs Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate OpenAPI Docs Presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s APIs/API-06-openapi-public.yaml
+          test -s APIs/API-07-openapi-admin.yaml
+          test -s APIs/openapi/components/schemas.common.yaml
+          test -s APIs/openapi/components/responses.common.yaml
+
+      - name: Validate OpenAPI Core Keys
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q '^openapi:' APIs/API-06-openapi-public.yaml
+          grep -q '^info:' APIs/API-06-openapi-public.yaml
+          grep -q '^paths:' APIs/API-06-openapi-public.yaml
+          grep -q '^openapi:' APIs/API-07-openapi-admin.yaml
+          grep -q '^info:' APIs/API-07-openapi-admin.yaml
+          grep -q '^paths:' APIs/API-07-openapi-admin.yaml
+          grep -q '^schemas:' APIs/openapi/components/schemas.common.yaml
+          grep -q '^responses:' APIs/openapi/components/responses.common.yaml
+
+      - name: Validate Shared Component References
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "./openapi/components/schemas.common.yaml#/schemas/" APIs/API-06-openapi-public.yaml
+          grep -q "./openapi/components/schemas.common.yaml#/schemas/" APIs/API-07-openapi-admin.yaml
+          grep -q "./openapi/components/responses.common.yaml#/responses/" APIs/API-06-openapi-public.yaml
+          grep -q "./openapi/components/responses.common.yaml#/responses/" APIs/API-07-openapi-admin.yaml
+
+      - name: Validate README Contract Section Mentions
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q "API-06-openapi-public.yaml" README.md
+          grep -q "API-07-openapi-admin.yaml" README.md
+          grep -q "schemas.common.yaml" README.md
+          grep -q "responses.common.yaml" README.md

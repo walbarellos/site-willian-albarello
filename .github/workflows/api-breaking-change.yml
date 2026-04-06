@@ -1,0 +1,163 @@
+name: API Breaking Change
+
+on:
+  pull_request:
+    paths:
+      - 'APIs/**'
+      - 'packages/contracts/src/**'
+      - '.github/workflows/api-breaking-change.yml'
+  push:
+    branches:
+      - main
+      - master
+    paths:
+      - 'APIs/**'
+      - 'packages/contracts/src/**'
+      - '.github/workflows/api-breaking-change.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: api-breaking-change-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  breaking-change-gate:
+    name: Breaking Change Gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate OpenAPI Files Presence
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -s APIs/API-06-openapi-public.yaml
+          test -s APIs/API-07-openapi-admin.yaml
+          test -s APIs/openapi/components/schemas.common.yaml
+          test -s APIs/openapi/components/responses.common.yaml
+
+      - name: Compare Contract Surface Against Base Branch
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          BASE_BRANCH="${{ github.base_ref }}"
+          git fetch --no-tags origin "$BASE_BRANCH" --depth=1
+
+          tmp_dir="$(mktemp -d)"
+          trap 'rm -rf "$tmp_dir"' EXIT
+
+          fail_if_removed() {
+            local label="$1"
+            local before_file="$2"
+            local after_file="$3"
+
+            if [ -s "$before_file" ]; then
+              if removed="$(comm -23 "$before_file" "$after_file")" && [ -n "$removed" ]; then
+                echo "Breaking change detected: removed $label"
+                echo "$removed"
+                exit 1
+              fi
+            fi
+          }
+
+          extract_operation_ids() {
+            local file="$1"
+            awk '/operationId:/ {print $2}' "$file" | sort -u
+          }
+
+          extract_path_methods() {
+            local file="$1"
+            awk '
+              /^  \/[^[:space:]]*:/ { path=$1 }
+              /^    (get|post|put|patch|delete):/ {
+                method=$1
+                sub(/:$/, "", method)
+                print path " " method
+              }
+            ' "$file" | sort -u
+          }
+
+          extract_schema_keys() {
+            local file="$1"
+            awk '
+              /^schemas:/ { in_schemas=1; next }
+              in_schemas && /^[^ ]/ { in_schemas=0 }
+              in_schemas && /^  [A-Za-z0-9_]+:/ {
+                key=$1
+                sub(/:$/, "", key)
+                print key
+              }
+            ' "$file" | sort -u
+          }
+
+          extract_response_keys() {
+            local file="$1"
+            awk '
+              /^responses:/ { in_responses=1; next }
+              in_responses && /^[^ ]/ { in_responses=0 }
+              in_responses && /^  [A-Za-z0-9_]+:/ {
+                key=$1
+                sub(/:$/, "", key)
+                print key
+              }
+            ' "$file" | sort -u
+          }
+
+          compare_openapi_file() {
+            local rel="$1"
+            local current="$rel"
+            local previous="$tmp_dir/prev-$(basename "$rel")"
+
+            if git show "origin/$BASE_BRANCH:$rel" > "$previous" 2>/dev/null; then
+              extract_operation_ids "$previous" > "$tmp_dir/before-op-$(basename "$rel")"
+              extract_operation_ids "$current" > "$tmp_dir/after-op-$(basename "$rel")"
+              fail_if_removed "operationId in $rel" "$tmp_dir/before-op-$(basename "$rel")" "$tmp_dir/after-op-$(basename "$rel")"
+
+              extract_path_methods "$previous" > "$tmp_dir/before-path-method-$(basename "$rel")"
+              extract_path_methods "$current" > "$tmp_dir/after-path-method-$(basename "$rel")"
+              fail_if_removed "path+method in $rel" "$tmp_dir/before-path-method-$(basename "$rel")" "$tmp_dir/after-path-method-$(basename "$rel")"
+            else
+              echo "No base version for $rel. Skipping removal check for this file."
+            fi
+          }
+
+          compare_component_file() {
+            local rel="$1"
+            local mode="$2"
+            local current="$rel"
+            local previous="$tmp_dir/prev-$(basename "$rel")"
+
+            if git show "origin/$BASE_BRANCH:$rel" > "$previous" 2>/dev/null; then
+              if [ "$mode" = "schemas" ]; then
+                extract_schema_keys "$previous" > "$tmp_dir/before-schemas"
+                extract_schema_keys "$current" > "$tmp_dir/after-schemas"
+                fail_if_removed "schemas in $rel" "$tmp_dir/before-schemas" "$tmp_dir/after-schemas"
+              else
+                extract_response_keys "$previous" > "$tmp_dir/before-responses"
+                extract_response_keys "$current" > "$tmp_dir/after-responses"
+                fail_if_removed "responses in $rel" "$tmp_dir/before-responses" "$tmp_dir/after-responses"
+              fi
+            else
+              echo "No base version for $rel. Skipping removal check for this file."
+            fi
+          }
+
+          compare_openapi_file "APIs/API-06-openapi-public.yaml"
+          compare_openapi_file "APIs/API-07-openapi-admin.yaml"
+          compare_component_file "APIs/openapi/components/schemas.common.yaml" "schemas"
+          compare_component_file "APIs/openapi/components/responses.common.yaml" "responses"
+
+          echo "No breaking removals detected against base branch."
+
+      - name: Inform Push Context
+        if: github.event_name == 'push'
+        run: echo "Breaking-change diff gate runs on pull_request. Push validates file presence only."
