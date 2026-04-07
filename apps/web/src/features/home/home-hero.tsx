@@ -93,6 +93,7 @@ export function HomeHero() {
             </div>
 
             <div
+              className="home-hero-actions"
               style={{
                 display: 'flex',
                 flexWrap: 'wrap',
