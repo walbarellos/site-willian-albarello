@@ -21,6 +21,7 @@ export function PublicationsSearchBar({
       method="get"
       role="search"
       aria-label="Buscar publicações"
+      className="publications-search-form"
       style={{
         display: 'grid',
         gap: '0.85rem',
@@ -65,6 +66,7 @@ export function PublicationsSearchBar({
       </label>
 
       <div
+        className="publications-search-actions"
         style={{
           display: 'flex',
           gap: '0.75rem',

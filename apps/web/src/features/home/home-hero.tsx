@@ -6,6 +6,7 @@ export function HomeHero() {
   return (
     <section
       aria-labelledby="home-hero-title"
+      className="home-hero"
       style={{
         paddingTop: '2rem',
         paddingBottom: '2rem',
@@ -15,6 +16,7 @@ export function HomeHero() {
       }}
     >
       <div
+        className="home-hero-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -23,14 +25,16 @@ export function HomeHero() {
         }}
       >
         <div
+          className="home-hero-grid"
           style={{
             display: 'grid',
             gap: '2rem',
-            gridTemplateColumns: 'minmax(0, 1.35fr) minmax(280px, 0.9fr)',
+            gridTemplateColumns: 'minmax(0, 1fr)',
             alignItems: 'start',
           }}
         >
           <div
+            className="home-hero-main"
             style={{
               display: 'grid',
               gap: '1.25rem',
@@ -138,6 +142,7 @@ export function HomeHero() {
 
             <ul
               aria-label="Pilares centrais"
+              className="home-hero-pillars"
               style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
@@ -186,12 +191,14 @@ export function HomeHero() {
 
           <aside
             aria-label="Quadro institucional"
+            className="home-hero-aside"
             style={{
               display: 'grid',
               gap: '1rem',
               alignContent: 'start',
               alignSelf: 'start',
               height: 'fit-content',
+              width: '100%',
               maxWidth: 420,
               padding: '1.35rem',
               borderRadius: 24,

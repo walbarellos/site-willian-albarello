@@ -1,5 +1,6 @@
 // apps/web/app/layout.tsx
 
+import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import type { ReactNode, CSSProperties } from 'react';
 
@@ -56,6 +57,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   themeColor: '#0b1020',
   colorScheme: 'light',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 type RootLayoutProps = Readonly<{
@@ -64,13 +67,16 @@ type RootLayoutProps = Readonly<{
 
 function ShellContainer({
   children,
+  className,
   style,
 }: Readonly<{
   children: ReactNode;
+  className?: string;
   style?: CSSProperties;
 }>) {
   return (
     <div
+      className={className ? `web-shell-container ${className}` : 'web-shell-container'}
       style={{
         width: '100%',
         maxWidth: 1120,
@@ -87,6 +93,7 @@ function ShellContainer({
 function PublicHeader() {
   return (
     <header
+      className="web-header"
       style={{
         position: 'sticky',
         top: 0,
@@ -98,6 +105,7 @@ function PublicHeader() {
       }}
     >
       <ShellContainer
+        className="web-header-shell"
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -109,12 +117,14 @@ function PublicHeader() {
         <a
           href="/"
           aria-label="Página inicial"
+          className="web-brand"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: '0.75rem',
             textDecoration: 'none',
             color: '#f8fafc',
+            minWidth: 0,
           }}
         >
           <span
@@ -138,25 +148,31 @@ function PublicHeader() {
           </span>
 
           <span
+            className="web-brand-copy"
             style={{
               display: 'inline-flex',
               flexDirection: 'column',
               lineHeight: 1.15,
+              minWidth: 0,
             }}
           >
             <span
+              className="web-brand-title"
               style={{
                 fontSize: '1rem',
                 fontWeight: 700,
                 letterSpacing: '-0.02em',
+                whiteSpace: 'nowrap',
               }}
             >
               William Albarello
             </span>
             <span
+              className="web-brand-subtitle"
               style={{
                 fontSize: '0.78rem',
                 color: 'rgba(226,232,240,0.74)',
+                whiteSpace: 'nowrap',
               }}
             >
               presença institucional
@@ -164,8 +180,9 @@ function PublicHeader() {
           </span>
         </a>
 
-        <nav aria-label="Navegação principal">
+        <nav aria-label="Navegação principal" className="web-nav">
           <ul
+            className="web-nav-list"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -177,12 +194,12 @@ function PublicHeader() {
             }}
           >
             <li>
-              <a href="/" style={navLinkStyle}>
+              <a href="/" style={navLinkStyle} className="web-nav-link">
                 Início
               </a>
             </li>
             <li>
-              <a href="/publicacoes" style={navLinkStyle}>
+              <a href="/publicacoes" style={navLinkStyle} className="web-nav-link">
                 Publicações
               </a>
             </li>
@@ -279,6 +296,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pt-BR">
       <body
+        className="web-body"
         style={{
           margin: 0,
           minHeight: '100vh',

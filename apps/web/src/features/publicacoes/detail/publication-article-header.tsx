@@ -37,6 +37,7 @@ export function PublicationArticleHeader({
 
   return (
     <header
+      className="publication-article-header"
       style={{
         display: 'grid',
         gap: '1rem',
@@ -49,6 +50,7 @@ export function PublicationArticleHeader({
       }}
     >
       <div
+        className="publication-article-header-content"
         style={{
           display: 'grid',
           gap: '1rem',
@@ -60,6 +62,7 @@ export function PublicationArticleHeader({
         <PublicationBreadcrumbs title={publication.title} />
 
         <div
+          className="publication-article-header-text"
           style={{
             display: 'flex',
             gap: '0.7rem',
@@ -117,6 +120,7 @@ export function PublicationArticleHeader({
           }}
         >
           <h1
+            className="publication-article-title"
             style={{
               margin: 0,
               color: '#0f172a',

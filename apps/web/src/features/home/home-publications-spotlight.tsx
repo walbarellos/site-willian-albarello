@@ -45,12 +45,14 @@ export function HomePublicationsSpotlight({
   return (
     <section
       aria-labelledby="publicacoes-destaque-title"
+      className="home-spotlight-section"
       style={{
         paddingTop: '2rem',
         paddingBottom: '2rem',
       }}
     >
       <div
+        className="home-section-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -59,6 +61,7 @@ export function HomePublicationsSpotlight({
         }}
       >
         <div
+          className="home-spotlight-header"
           style={{
             display: 'flex',
             gap: '1rem',
@@ -69,6 +72,7 @@ export function HomePublicationsSpotlight({
           }}
         >
           <div
+            className="home-spotlight-grid"
             style={{
               display: 'grid',
               gap: '0.75rem',

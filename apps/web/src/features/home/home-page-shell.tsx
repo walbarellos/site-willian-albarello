@@ -23,6 +23,7 @@ function ThesisSection() {
       }}
     >
       <div
+        className="home-section-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -31,6 +32,7 @@ function ThesisSection() {
         }}
       >
         <div
+          className="home-thesis-grid"
           style={{
             display: 'grid',
             gap: '1rem',
@@ -152,6 +154,7 @@ function BlocksSection() {
       }}
     >
       <div
+        className="home-section-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -160,6 +163,7 @@ function BlocksSection() {
         }}
       >
         <div
+          className="home-blocks-grid"
           style={{
             display: 'grid',
             gap: '1rem',
@@ -284,6 +288,7 @@ function ClosingSection() {
       }}
     >
       <div
+        className="home-section-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -292,6 +297,7 @@ function ClosingSection() {
         }}
       >
         <div
+          className="home-closing-card"
           style={{
             display: 'grid',
             gap: '1rem',
@@ -343,6 +349,7 @@ function ClosingSection() {
           </p>
 
           <div
+            className="home-closing-actions"
             style={{
               display: 'flex',
               flexWrap: 'wrap',

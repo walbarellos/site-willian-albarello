@@ -17,6 +17,7 @@ export function PublicationDetailFooter({
   return (
     <section
       aria-labelledby="publication-footer-title"
+      className="publication-detail-footer"
       style={{
         display: 'grid',
         gap: '0.9rem',
@@ -54,6 +55,7 @@ export function PublicationDetailFooter({
       </p>
 
       <div
+        className="publication-detail-footer-actions"
         style={{
           width: '100%',
           display: 'grid',

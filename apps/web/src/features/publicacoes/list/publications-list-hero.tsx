@@ -20,12 +20,14 @@ export function PublicationsListHero({
   return (
     <section
       aria-labelledby="publicacoes-title"
+      className="publications-hero"
       style={{
         paddingTop: '1rem',
         paddingBottom: '2rem',
       }}
     >
       <div
+        className="publications-hero-shell"
         style={{
           width: '100%',
           maxWidth: 1120,
@@ -33,7 +35,7 @@ export function PublicationsListHero({
           paddingInline: '1.25rem',
         }}
       >
-        <div style={heroCardStyle}>
+        <div style={heroCardStyle} className="publications-hero-card">
           <div
             style={{
               display: 'grid',
@@ -42,7 +44,7 @@ export function PublicationsListHero({
           >
             <span style={eyebrowStyle}>{eyebrow}</span>
 
-            <h1 id="publicacoes-title" style={titleStyle}>
+            <h1 id="publicacoes-title" style={titleStyle} className="publications-hero-title">
               {title}
             </h1>
 

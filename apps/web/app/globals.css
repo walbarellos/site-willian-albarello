@@ -1,0 +1,216 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (min-width: 1024px) {
+  .home-hero-grid {
+    grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.9fr) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .web-header {
+    position: static !important;
+    backdrop-filter: none !important;
+    background: #0b1020 !important;
+  }
+
+  .web-header-shell {
+    min-height: auto !important;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .web-nav {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 720px) {
+  .web-shell-container,
+  .home-hero-shell {
+    padding-inline: 0.85rem !important;
+  }
+
+  .web-header-shell {
+    flex-wrap: wrap;
+    gap: 0.6rem !important;
+  }
+
+  .web-brand-subtitle {
+    display: none !important;
+  }
+
+  .web-nav {
+    width: 100%;
+    margin-left: 0 !important;
+  }
+
+  .web-nav-list {
+    width: 100%;
+    justify-content: flex-start !important;
+    gap: 0.45rem !important;
+  }
+
+  .web-nav-link {
+    min-height: 34px !important;
+    padding-inline: 0.5rem !important;
+    font-size: 0.84rem !important;
+  }
+
+  .home-hero {
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .home-section-shell {
+    padding-inline: 0.85rem !important;
+  }
+
+  .home-hero-grid {
+    gap: 1rem !important;
+  }
+
+  .home-hero-main h1 {
+    font-size: clamp(1.8rem, 8.2vw, 2.6rem) !important;
+    line-height: 1.08 !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .home-hero-main p {
+    font-size: 1rem !important;
+    line-height: 1.65 !important;
+  }
+
+  .home-hero-pillars {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+  }
+
+  .home-hero-pillars li {
+    min-height: 48px !important;
+    padding: 0.75rem !important;
+  }
+
+  .home-thesis-grid,
+  .home-blocks-grid,
+  .home-spotlight-grid,
+  .publications-list-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .home-spotlight-header {
+    align-items: flex-start !important;
+    margin-bottom: 1rem !important;
+  }
+
+  .home-closing-actions > * {
+    flex: 1 1 auto;
+    justify-content: center !important;
+  }
+
+  .publications-hero {
+    padding-top: 0.75rem !important;
+    padding-bottom: 1rem !important;
+  }
+
+  .publications-hero-shell {
+    padding-inline: 0.85rem !important;
+  }
+
+  .publications-hero-card {
+    padding: 1rem !important;
+    border-radius: 16px !important;
+  }
+
+  .publications-hero-title {
+    font-size: clamp(1.6rem, 7.2vw, 2.25rem) !important;
+    line-height: 1.1 !important;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .publications-search-form {
+    grid-template-columns: minmax(0, 1fr) !important;
+    align-items: stretch !important;
+  }
+
+  .publications-search-actions {
+    width: 100%;
+  }
+
+  .publications-search-actions > * {
+    flex: 1 1 auto;
+    justify-content: center;
+  }
+
+  .publications-results-header {
+    align-items: flex-start !important;
+  }
+
+  .publications-back-home {
+    min-height: 32px !important;
+  }
+
+  .publications-list-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .publication-article-header {
+    padding: 1rem !important;
+    border-radius: 16px !important;
+  }
+
+  .publication-article-title {
+    font-size: clamp(1.65rem, 7vw, 2.3rem) !important;
+    line-height: 1.1 !important;
+    text-align: left !important;
+  }
+
+  .publication-detail-footer-actions {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .publication-detail-footer-actions > a {
+    width: 100%;
+    justify-self: stretch !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .home-hero-pillars {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  .web-shell-container,
+  .home-hero-shell,
+  .home-section-shell,
+  .publications-hero-shell {
+    padding-inline: 0.75rem !important;
+  }
+
+  .web-brand-title {
+    font-size: 0.95rem !important;
+  }
+
+  .web-nav-link {
+    font-size: 0.82rem !important;
+    padding-inline: 0.45rem !important;
+  }
+}

@@ -36,6 +36,7 @@ function ResultsHeader({
 }>) {
   return (
     <div
+      className="publications-results-header"
       style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -77,6 +78,7 @@ function ResultsHeader({
 
       <Link
         href={WEB_PUBLIC_ROUTES.home}
+        className="publications-back-home"
         style={{
           display: 'inline-flex',
           alignItems: 'center',
@@ -151,6 +153,7 @@ export function PublicationsListShell({
               isEmpty={isEmpty}
             >
               <div
+                className="publications-list-grid"
                 style={{
                   display: 'grid',
                   gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
