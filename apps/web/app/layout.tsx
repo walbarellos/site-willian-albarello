@@ -203,6 +203,11 @@ function PublicHeader() {
                 Publicações
               </a>
             </li>
+            <li>
+              <a href="/painel/login" style={navLinkStyle} className="web-nav-link">
+                Painel
+              </a>
+            </li>
           </ul>
         </nav>
       </ShellContainer>
@@ -282,8 +287,9 @@ function PublicFooter() {
             <a href="/" style={footerLinkStyle}>
               Início
             </a>
-            <a href="/publicacoes" style={footerLinkStyle}>
-              Publicações
+            
+            <a href="/painel/login" style={footerLinkStyle}>
+              Painel
             </a>
           </div>
         </div>
