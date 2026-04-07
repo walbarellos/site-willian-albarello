@@ -1,5 +1,9 @@
 # personal-site
 
+<img width="1210" height="909" alt="image" src="https://github.com/user-attachments/assets/ad999313-8332-41d8-9561-7844200ab55a" />
+<img width="1210" height="833" alt="image" src="https://github.com/user-attachments/assets/cb0ab06e-7b4b-4bfb-b6d8-dc70347afcc3" />
+
+
 Monorepo do projeto `personal-site` com três aplicações e dois pacotes compartilhados.
 
 ## Mapa do repositório
