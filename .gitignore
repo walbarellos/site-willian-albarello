@@ -74,3 +74,12 @@ temp/
 # Manter versionados
 # ---------------------------------------------------------
 !.env.example
+
+# Documentacao privada (nao versionar)
+Implementacao/
+QA/
+Scaffold/
+UI_UX/
+docs/
+infra/**/*.md
+infra/*.md
