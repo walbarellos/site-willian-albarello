@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import type { CSSProperties } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 export type AdminSidebarNavItem = {
   href: string;
@@ -42,7 +42,13 @@ function isActiveItem(
 
 export function AdminSidebarNav({ items }: AdminSidebarNavProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const [searchParams, setSearchParams] = useState<URLSearchParams>(
+    new URLSearchParams(),
+  );
+
+  useEffect(() => {
+    setSearchParams(new URLSearchParams(window.location.search));
+  }, []);
 
   return (
     <ul
