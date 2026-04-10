@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import type { Metadata, Viewport } from 'next';
 import type { CSSProperties, ReactNode } from 'react';
+import { Suspense } from 'react';
 import {
   AdminSidebarNav,
   type AdminSidebarNavItem,
@@ -170,7 +171,9 @@ function AdminSidebar() {
       <AdminBrand />
 
       <nav aria-label="Seções internas">
-        <AdminSidebarNav items={adminNavItems} />
+        <Suspense fallback={<AdminSidebarNavFallback items={adminNavItems} />}>
+          <AdminSidebarNav items={adminNavItems} />
+        </Suspense>
       </nav>
 
       <div
@@ -232,6 +235,49 @@ function AdminSidebar() {
         </div>
       </div>
     </aside>
+  );
+}
+
+function AdminSidebarNavFallback({
+  items,
+}: Readonly<{ items: AdminSidebarNavItem[] }>) {
+  return (
+    <ul
+      style={{
+        display: 'grid',
+        gap: '0.6rem',
+        listStyle: 'none',
+        padding: 0,
+        margin: 0,
+      }}
+    >
+      {items.map((item) => (
+        <li key={item.href}>
+          <span
+            style={{
+              display: 'grid',
+              gap: '0.25rem',
+              padding: '0.95rem 1rem',
+              borderRadius: 16,
+              background: 'rgba(255,255,255,0.03)',
+              border: '1px solid rgba(148, 163, 184, 0.10)',
+              color: '#f8fafc',
+            }}
+          >
+            <strong style={{ lineHeight: 1.2 }}>{item.label}</strong>
+            <span
+              style={{
+                color: '#94a3b8',
+                fontSize: '0.82rem',
+                lineHeight: 1.45,
+              }}
+            >
+              {item.description}
+            </span>
+          </span>
+        </li>
+      ))}
+    </ul>
   );
 }
 
